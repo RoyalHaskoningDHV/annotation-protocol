@@ -9,6 +9,10 @@ readme = "README.md"
 requires-python = ">=3.10,<3.11"
 maintainers = [
     { name = "Steffen Burgers", email = "steffen.burgers@rhdhv.com" },
+    { name = "Ruud Kassing", email = "ruud.kassing@rhdhv.com" },
+    { name = "Miguel Pereira Hernandez", email = "miguel.hernandez@rhdhv.com" },
+    { name = "Jesse de Ruijter", email = "jesse.de.ruijter@rhdhv.com" },
+    { name = "Pierpaolo Lucarelli", email = "pierpaolo.lucarelli@rhdhv.com" }
 ]
 dependencies = []
 optional-dependencies.dev = ["pytest", "black", "pre-commit", "isort", "bandit==1.7.0", "flake8"]
@@ -64,12 +68,6 @@ exclude = [
     "node_modules",
     "venv",
 ]
-
-# Same as Black.
-line-length = 99
-
-# Allow unused variables when underscore-prefixed.
-dummy-variable-rgx = "^(_+|(_+[a-zA-Z0-9_]*[a-zA-Z0-9]+?))$"
 
 [tool.ruff.mccabe]
 max-complexity = 21
