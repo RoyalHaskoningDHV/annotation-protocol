@@ -1,0 +1,84 @@
+[build-system]
+requires = ["setuptools"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "annotation_protocol"
+description = "Annotation protocol to allow very thorough isinstance checks."
+readme = "README.md"
+requires-python = ">=3.10,<3.11"
+maintainers = [
+    { name = "Steffen Burgers", email = "steffen.burgers@rhdhv.com" },
+]
+dependencies = []
+optional-dependencies.dev = ["pytest", "black", "pre-commit", "isort", "bandit==1.7.0", "flake8"]
+dynamic = ["version"]
+
+[tool.setuptools]
+packages.find.include = ["annotation_protocol*"]
+dynamic.version.attr = "annotation_protocol._version.__version__"
+
+[tool.black]
+line-length = 99
+
+
+[tool.ruff]
+target-version = "py310"
+
+select = [
+    "A", # Shadowing builtins
+    "C", # flake8 rules
+    "E", # Pycodestyle rules
+    "F", # Py flakes
+    "I", # isort rules
+    "S", # Bandit rules
+    "W", # Pycodestyle rules
+]
+ignore = ["E501"]
+
+# Allow autofix for all enabled rules (when `--fix`) is provided.
+fixable = ["A", "B", "C", "D", "E", "F", "G", "I", "N", "Q", "S", "T", "W", "ANN", "ARG", "BLE", "COM", "DJ", "DTZ", "EM", "ERA", "EXE", "FBT", "ICN", "INP", "ISC", "NPY", "PD", "PGH", "PIE", "PL", "PT", "PTH", "PYI", "RET", "RSE", "RUF", "SIM", "SLF", "TCH", "TID", "TRY", "UP", "YTT"]
+unfixable = []
+
+# Exclude a variety of commonly ignored directories.
+exclude = [
+    ".bzr",
+    ".direnv",
+    ".eggs",
+    ".git",
+    ".git-rewrite",
+    ".hg",
+    ".mypy_cache",
+    ".nox",
+    ".pants.d",
+    ".pytype",
+    ".ruff_cache",
+    ".svn",
+    ".tox",
+    ".venv",
+    "__pypackages__",
+    "_build",
+    "buck-out",
+    "build",
+    "dist",
+    "node_modules",
+    "venv",
+]
+
+# Same as Black.
+line-length = 99
+
+# Allow unused variables when underscore-prefixed.
+dummy-variable-rgx = "^(_+|(_+[a-zA-Z0-9_]*[a-zA-Z0-9]+?))$"
+
+[tool.ruff.mccabe]
+max-complexity = 21
+
+[tool.ruff.per-file-ignores]
+"tests/*" = ["D102", "PLR2004", "S101"]
+
+[tool.pytest.ini_options]
+filterwarnings = [
+    "ignore",
+    "default:::annotation_protocol.*",
+]
