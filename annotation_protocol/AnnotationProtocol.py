@@ -21,7 +21,7 @@ def _compare_annotations(left: Any, right: Any) -> bool:
         if get_origin(left) is Union:
             return set(get_args(left)) <= right_types
         return left in right_types
-    return left is right
+    return left == right
 
 
 def _compare_signatures(
@@ -147,7 +147,7 @@ class _AnnotationProtocolMeta(type(Protocol)):
                     and not hasattr(instance, attr)
                 ):
                     # Missing data attributes
-                    logger.debug("Missing data attributes")
+                    logger.debug(f"Missing data attributes: {attr}")
                     return super(type(Protocol), cls).__instancecheck__(instance)
             # instance may actually be a proper class rather than an instance
             check = _check_annotations(
