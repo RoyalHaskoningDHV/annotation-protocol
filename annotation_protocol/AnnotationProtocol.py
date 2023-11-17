@@ -2,6 +2,7 @@ import inspect
 import logging
 from typing import (
     Any,
+    _ProtocolMeta,
     Protocol,
     Union,
     _get_protocol_attrs,
@@ -137,7 +138,7 @@ def _check_annotations(proto, other):
     return True
 
 
-class _AnnotationProtocolMeta(type(Protocol)):
+class _AnnotationProtocolMeta(_ProtocolMeta):
     def __instancecheck__(cls: Any, instance: Any) -> bool:
         if getattr(cls, "_is_protocol", False):
             for attr in _get_protocol_attrs(cls):
@@ -148,14 +149,14 @@ class _AnnotationProtocolMeta(type(Protocol)):
                 ):
                     # Missing data attributes
                     logger.debug(f"Missing data attributes: {attr}")
-                    return super(type(Protocol), cls).__instancecheck__(instance)
+                    return super().__instancecheck__(instance)
             # instance may actually be a proper class rather than an instance
             check = _check_annotations(
                 cls, instance if isinstance(instance, type) else instance.__class__
             )
             if isinstance(check, bool):
                 return check
-        return super(type(Protocol), cls).__instancecheck__(instance)
+        return super(_ProtocolMeta, cls).__instancecheck__(instance)
 
 
 class AnnotationProtocol(Protocol, metaclass=_AnnotationProtocolMeta):
