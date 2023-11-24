@@ -5,7 +5,6 @@ from typing import (
     Protocol,
     Union,
     _get_protocol_attrs,
-    _ProtocolMeta,
     get_args,
     get_origin,
     runtime_checkable,
@@ -140,7 +139,7 @@ def _check_annotations(proto, other):
     return True
 
 
-class _AnnotationProtocolMeta(_ProtocolMeta):
+class _AnnotationProtocolMeta(type(Protocol)):
     def __instancecheck__(cls: Any, instance: Any) -> bool:
         if getattr(cls, "_is_protocol", False):
             for attr in _get_protocol_attrs(cls):
@@ -157,7 +156,7 @@ class _AnnotationProtocolMeta(_ProtocolMeta):
             )
             if isinstance(check, bool):
                 return check
-        return super(_ProtocolMeta, cls).__instancecheck__(instance)
+        return super(type(Protocol), cls).__instancecheck__(instance)
 
 
 class AnnotationProtocol(Protocol, metaclass=_AnnotationProtocolMeta):
