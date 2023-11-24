@@ -127,7 +127,7 @@ def _check_annotations(proto, other):
                 logger.debug(f"{attr} is not a callable in {other} with MRO base {base}")
                 return NotImplemented
 
-            logger.debug(f"Comparing signature of `{attr}` in {other} with MRO base {base}")
+            logger.debug(f"Comparing signature of `{attr}` in {other} with MRO base {base} against protocol")
             compare = _compare_signatures(proto_signature, other_signature)
             if compare is not True:
                 return compare
