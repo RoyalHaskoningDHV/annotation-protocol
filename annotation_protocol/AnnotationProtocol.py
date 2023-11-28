@@ -7,7 +7,6 @@ from typing import (
     _get_protocol_attrs,
     get_args,
     get_origin,
-    get_type_hints,
     runtime_checkable,
 )
 
