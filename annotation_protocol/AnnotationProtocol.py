@@ -7,6 +7,7 @@ from typing import (
     _get_protocol_attrs,
     get_args,
     get_origin,
+    get_type_hints,
     runtime_checkable,
 )
 
@@ -111,7 +112,7 @@ def _check_annotations(proto, other):
         # Skip if attr doesn't have annotations in the protocol
         try:
             proto_attr = getattr(proto, attr, None)
-            proto_signature = inspect.signature(proto_attr)
+            proto_signature = inspect.signature(proto_attr, eval_str=True)
         except TypeError:
             continue
 
@@ -120,7 +121,7 @@ def _check_annotations(proto, other):
                 continue
             try:
                 other_attr = getattr(base, attr)
-                other_signature = inspect.signature(other_attr)
+                other_signature = inspect.signature(other_attr, eval_str=True)
             except TypeError:
                 # attr is not a callable in other
                 logger.debug(f"{attr} is not a callable in {other} with MRO base {base}")
