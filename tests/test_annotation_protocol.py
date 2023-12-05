@@ -1,5 +1,6 @@
 import unittest
-from typing import Any, Callable, Dict, Tuple, Union
+from collections.abc import Callable
+from typing import Any
 
 from annotation_protocol import AnnotationProtocol
 
@@ -14,18 +15,18 @@ class TestAnnotationProtocol(unittest.TestCase):
         class Missing:
             pass
 
-        self.assertNotIsInstance(Missing(), Proto)
+        assert not isinstance(Missing(), Proto)
 
     def test_missing_data_attr(self):
         class Proto(AnnotationProtocol):
             data: int
 
         class OnlyAfterInit:
-            def __init__(self):
+            def __init__(self) -> None:
                 self.data = 123
 
-        self.assertNotIsInstance(OnlyAfterInit, Proto)
-        self.assertIsInstance(OnlyAfterInit(), Proto)
+        assert not isinstance(OnlyAfterInit, Proto)
+        assert isinstance(OnlyAfterInit(), Proto)
 
     def test_not_a_callable(self):
         class Proto(AnnotationProtocol):
@@ -36,7 +37,7 @@ class TestAnnotationProtocol(unittest.TestCase):
         class NotACallable:
             f: int
 
-        self.assertNotIsInstance(NotACallable(), Proto)
+        assert not isinstance(NotACallable(), Proto)
 
     def test_missing_params(self):
         class Proto(AnnotationProtocol):
@@ -59,9 +60,9 @@ class TestAnnotationProtocol(unittest.TestCase):
             def f(pos_only: int, /, pos_or_key: int):
                 ...
 
-        self.assertNotIsInstance(MissingPosOnly(), Proto)
-        self.assertNotIsInstance(MissingPosOrKey(), Proto)
-        self.assertNotIsInstance(MissingKeyOnly(), Proto)
+        assert not isinstance(MissingPosOnly(), Proto)
+        assert not isinstance(MissingPosOrKey(), Proto)
+        assert not isinstance(MissingKeyOnly(), Proto)
 
     def test_bound_methods(self):
         class Proto(AnnotationProtocol):
@@ -87,8 +88,8 @@ class TestAnnotationProtocol(unittest.TestCase):
             def classmeth(cls):
                 ...
 
-        self.assertIsInstance(Test(), Proto)
-        self.assertNotIsInstance(NoClassMethod(), Proto)
+        assert isinstance(Test(), Proto)
+        assert not isinstance(NoClassMethod(), Proto)
 
     def test_no_params(self):
         class Proto(AnnotationProtocol):
@@ -120,11 +121,11 @@ class TestAnnotationProtocol(unittest.TestCase):
             def f(self):
                 ...
 
-        self.assertIsInstance(NoParams(), Proto)
-        self.assertNotIsInstance(ExtraParams(), Proto)
-        self.assertIsInstance(VarPos(), Proto)
-        self.assertIsInstance(VarKey(), Proto)
-        self.assertNotIsInstance(BoundMethod(), Proto)
+        assert isinstance(NoParams(), Proto)
+        assert not isinstance(ExtraParams(), Proto)
+        assert isinstance(VarPos(), Proto)
+        assert isinstance(VarKey(), Proto)
+        assert not isinstance(BoundMethod(), Proto)
 
     def test_extra_params(self):
         class NoVarProto(AnnotationProtocol):
@@ -162,20 +163,20 @@ class TestAnnotationProtocol(unittest.TestCase):
             def f(pos_only: int, /, pos_or_key: int, *, key_only: int, extra_key_only: int):
                 ...
 
-        self.assertNotIsInstance(ExtraPosOnly(), NoVarProto)
-        self.assertNotIsInstance(ExtraPosOnly(), VarPosProto)
-        self.assertNotIsInstance(ExtraPosOnly(), VarKeyProto)
-        self.assertNotIsInstance(ExtraPosOnly(), VarBothProto)
+        assert not isinstance(ExtraPosOnly(), NoVarProto)
+        assert not isinstance(ExtraPosOnly(), VarPosProto)
+        assert not isinstance(ExtraPosOnly(), VarKeyProto)
+        assert not isinstance(ExtraPosOnly(), VarBothProto)
 
-        self.assertNotIsInstance(ExtraPosOrKey(), NoVarProto)
-        self.assertIsInstance(ExtraPosOrKey(), VarPosProto)
-        self.assertIsInstance(ExtraPosOrKey(), VarKeyProto)
-        self.assertIsInstance(ExtraPosOrKey(), VarBothProto)
+        assert not isinstance(ExtraPosOrKey(), NoVarProto)
+        assert isinstance(ExtraPosOrKey(), VarPosProto)
+        assert isinstance(ExtraPosOrKey(), VarKeyProto)
+        assert isinstance(ExtraPosOrKey(), VarBothProto)
 
-        self.assertNotIsInstance(ExtraKeyOnly(), NoVarProto)
-        self.assertNotIsInstance(ExtraKeyOnly(), VarPosProto)
-        self.assertIsInstance(ExtraKeyOnly(), VarKeyProto)
-        self.assertIsInstance(ExtraKeyOnly(), VarBothProto)
+        assert not isinstance(ExtraKeyOnly(), NoVarProto)
+        assert not isinstance(ExtraKeyOnly(), VarPosProto)
+        assert isinstance(ExtraKeyOnly(), VarKeyProto)
+        assert isinstance(ExtraKeyOnly(), VarBothProto)
 
     def test_pos_only_params(self):
         class PosOnlyProto(AnnotationProtocol):
@@ -198,10 +199,10 @@ class TestAnnotationProtocol(unittest.TestCase):
             def f(x: int, extra_pos_or_key: int):
                 ...
 
-        self.assertIsInstance(ExtraPosOnly(), PosOnlyProto)
-        self.assertNotIsInstance(ExtraPosOnly(), PosOrKeyProto)
-        self.assertIsInstance(ExtraPosOrKey(), PosOnlyProto)
-        self.assertIsInstance(ExtraPosOrKey(), PosOrKeyProto)
+        assert isinstance(ExtraPosOnly(), PosOnlyProto)
+        assert not isinstance(ExtraPosOnly(), PosOrKeyProto)
+        assert isinstance(ExtraPosOrKey(), PosOnlyProto)
+        assert isinstance(ExtraPosOrKey(), PosOrKeyProto)
 
     def test_renamed_params(self):
         class Proto(AnnotationProtocol):
@@ -224,9 +225,9 @@ class TestAnnotationProtocol(unittest.TestCase):
             def f(pos_only: int, /, pos_or_key: int, *, renamed_key_only: int):
                 ...
 
-        self.assertIsInstance(RenamePosOnly(), Proto)
-        self.assertNotIsInstance(RenamePosOrKey(), Proto)
-        self.assertNotIsInstance(RenameKeyOnly(), Proto)
+        assert isinstance(RenamePosOnly(), Proto)
+        assert not isinstance(RenamePosOrKey(), Proto)
+        assert not isinstance(RenameKeyOnly(), Proto)
 
     def test_simple_annotations(self):
         class Proto(AnnotationProtocol):
@@ -291,12 +292,12 @@ class TestAnnotationProtocol(unittest.TestCase):
         class MismatchInParent(Mismatch):
             pass
 
-        self.assertIsInstance(ExactMatch(), Proto)
-        self.assertIsInstance(ExtraAnnotations(), Proto)
-        self.assertIsInstance(DifferentReturn(), Proto)
-        self.assertNotIsInstance(Mismatch(), Proto)
-        self.assertIsInstance(MatchInParent(), Proto)
-        self.assertNotIsInstance(MismatchInParent(), Proto)
+        assert isinstance(ExactMatch(), Proto)
+        assert isinstance(ExtraAnnotations(), Proto)
+        assert isinstance(DifferentReturn(), Proto)
+        assert not isinstance(Mismatch(), Proto)
+        assert isinstance(MatchInParent(), Proto)
+        assert not isinstance(MismatchInParent(), Proto)
 
     def test_callable_anotations(self):
         class Proto(AnnotationProtocol):
@@ -319,24 +320,24 @@ class TestAnnotationProtocol(unittest.TestCase):
             def f(x: Callable[[str, list], int]):
                 ...
 
-        self.assertIsInstance(Match(), Proto)
-        self.assertNotIsInstance(Nonspecific(), Proto)
-        self.assertNotIsInstance(Mismatch(), Proto)
+        assert isinstance(Match(), Proto)
+        assert not isinstance(Nonspecific(), Proto)
+        assert not isinstance(Mismatch(), Proto)
 
     def test_dict_annotations(self):
         class Proto(AnnotationProtocol):
             @staticmethod
-            def f(x: Dict[Tuple[list, str], int]):
+            def f(x: dict[tuple[list, str], int]):
                 ...
 
         class Match:
             @staticmethod
-            def f(x: Dict[Tuple[list, str], int]):
+            def f(x: dict[tuple[list, str], int]):
                 ...
 
         class Nonspecific:
             @staticmethod
-            def f(x: Dict):
+            def f(x: dict):
                 ...
 
         class Different:
@@ -346,13 +347,13 @@ class TestAnnotationProtocol(unittest.TestCase):
 
         class Mismatch:
             @staticmethod
-            def f(x: Dict[tuple, int]):
+            def f(x: dict[tuple, int]):
                 ...
 
-        self.assertIsInstance(Match(), Proto)
-        self.assertNotIsInstance(Nonspecific(), Proto)
-        self.assertNotIsInstance(Different(), Proto)
-        self.assertNotIsInstance(Mismatch(), Proto)
+        assert isinstance(Match(), Proto)
+        assert not isinstance(Nonspecific(), Proto)
+        assert not isinstance(Different(), Proto)
+        assert not isinstance(Mismatch(), Proto)
 
     def test_union_annotations(self):
         class SimpleProto(AnnotationProtocol):
@@ -362,7 +363,7 @@ class TestAnnotationProtocol(unittest.TestCase):
 
         class UnionProto(AnnotationProtocol):
             @staticmethod
-            def f(x: Union[int, str, list]):
+            def f(x: int | str | list):
                 ...
 
         class Simple:
@@ -372,33 +373,33 @@ class TestAnnotationProtocol(unittest.TestCase):
 
         class SubsetUnion:
             @staticmethod
-            def f(x: Union[int, str]):
+            def f(x: int | str):
                 ...
 
         class MatchUnion:
             @staticmethod
-            def f(x: Union[int, str, list]):
+            def f(x: int | str | list):
                 ...
 
         class SupersetUnion:
             @staticmethod
-            def f(x: Union[int, str, list, tuple]):
+            def f(x: int | str | list | tuple):
                 ...
 
         class MismatchUnion:
             @staticmethod
-            def f(x: Union[tuple, dict]):
+            def f(x: tuple | dict):
                 ...
 
-        self.assertIsInstance(Simple(), SimpleProto)
-        self.assertIsInstance(MatchUnion(), SimpleProto)
-        self.assertNotIsInstance(MismatchUnion(), SimpleProto)
+        assert isinstance(Simple(), SimpleProto)
+        assert isinstance(MatchUnion(), SimpleProto)
+        assert not isinstance(MismatchUnion(), SimpleProto)
 
-        self.assertNotIsInstance(Simple(), UnionProto)
-        self.assertNotIsInstance(SubsetUnion(), UnionProto)
-        self.assertIsInstance(MatchUnion(), UnionProto)
-        self.assertIsInstance(SupersetUnion(), UnionProto)
-        self.assertNotIsInstance(MismatchUnion(), UnionProto)
+        assert not isinstance(Simple(), UnionProto)
+        assert not isinstance(SubsetUnion(), UnionProto)
+        assert isinstance(MatchUnion(), UnionProto)
+        assert isinstance(SupersetUnion(), UnionProto)
+        assert not isinstance(MismatchUnion(), UnionProto)
 
     def test_return_anotation(self):
         class IntProto(AnnotationProtocol):
@@ -431,11 +432,11 @@ class TestAnnotationProtocol(unittest.TestCase):
             def f() -> Any:
                 ...
 
-        self.assertNotIsInstance(StrReturn(), IntProto)
-        self.assertIsInstance(StrReturn(), NoneProto)
-        self.assertIsInstance(StrReturn(), AnyProto)
-        self.assertIsInstance(StrReturn(), UntypedProto)
-        self.assertIsInstance(AnyReturn(), IntProto)
+        assert not isinstance(StrReturn(), IntProto)
+        assert isinstance(StrReturn(), NoneProto)
+        assert isinstance(StrReturn(), AnyProto)
+        assert isinstance(StrReturn(), UntypedProto)
+        assert isinstance(AnyReturn(), IntProto)
 
     def test_works_for_classes(self):
         class Proto(AnnotationProtocol):
@@ -448,5 +449,5 @@ class TestAnnotationProtocol(unittest.TestCase):
             def f() -> int:
                 ...
 
-        self.assertIsInstance(Test(), Proto)
-        self.assertIsInstance(Test, Proto)
+        assert isinstance(Test(), Proto)
+        assert isinstance(Test, Proto)

@@ -27,22 +27,11 @@ line-length = 99
 
 
 [tool.ruff]
+line-length = 99
 target-version = "py310"
-
-select = [
-    "A", # Shadowing builtins
-    "C", # flake8 rules
-    "E", # Pycodestyle rules
-    "F", # Py flakes
-    "I", # isort rules
-    "S", # Bandit rules
-    "W", # Pycodestyle rules
-]
-ignore = ["E501"]
-
-# Allow autofix for all enabled rules (when `--fix`) is provided.
-fixable = ["A", "B", "C", "D", "E", "F", "G", "I", "N", "Q", "S", "T", "W", "ANN", "ARG", "BLE", "COM", "DJ", "DTZ", "EM", "ERA", "EXE", "FBT", "ICN", "INP", "ISC", "NPY", "PD", "PGH", "PIE", "PL", "PT", "PTH", "PYI", "RET", "RSE", "RUF", "SIM", "SLF", "TCH", "TID", "TRY", "UP", "YTT"]
-unfixable = []
+select = ["ALL"]
+ignore = ["PERF203"]
+ignore-init-module-imports = true
 
 # Exclude a variety of commonly ignored directories.
 exclude = [
@@ -70,10 +59,10 @@ exclude = [
 ]
 
 [tool.ruff.mccabe]
-max-complexity = 21
+max-complexity = 10
 
 [tool.ruff.per-file-ignores]
-"tests/*" = ["D102", "PLR2004", "S101"]
+"tests/*" = ["ANN", "C", "D", "N", "PLR2004", "S101"]
 
 [tool.pytest.ini_options]
 filterwarnings = [
