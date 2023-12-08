@@ -28,13 +28,9 @@ def compare_signatures(
     -------
         bool: True when signatures of class `other` are equal to `protocol`
     """
-    if not return_annotations_equal(protocol, other):
-        return False
-
-    if not argument_annotations_equal(protocol, other):
-        return False
-
-    return True
+    if return_annotations_equal(protocol, other) and argument_annotations_equal(protocol, other):
+        return True
+    return False
 
 
 def check_annotations(
