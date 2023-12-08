@@ -23,7 +23,7 @@ They `Protocol` class from the `typing` package can be used to create templates 
 
 ## Usage
 
-For clarity, in the examples below we compare the standard `Protocol` from the `typing` package against the `AnnotationProtocol`. Note that both return `False` when an attribute or method is missing, but only the `AnnotationProtocol` returns False when there is a mismatch in type-hints.
+For clarity, in the examples below we compare the standard `Protocol` from the `typing` package against the `AnnotationProtocol`. Note that only the `AnnotationProtocol` returns `False` when there is a mismatch in type-hints.
 
 ```python
 from typing import Protocol, runtime_checkable
