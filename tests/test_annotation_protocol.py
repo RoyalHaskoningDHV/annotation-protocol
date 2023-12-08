@@ -392,13 +392,13 @@ class TestAnnotationProtocol(unittest.TestCase):
                 ...
 
         assert isinstance(Simple(), SimpleProto)
-        assert isinstance(MatchUnion(), SimpleProto)
+        assert not isinstance(MatchUnion(), SimpleProto)
         assert not isinstance(MismatchUnion(), SimpleProto)
 
-        assert not isinstance(Simple(), UnionProto)
-        assert not isinstance(SubsetUnion(), UnionProto)
+        assert isinstance(Simple(), UnionProto)
+        assert isinstance(SubsetUnion(), UnionProto)
         assert isinstance(MatchUnion(), UnionProto)
-        assert isinstance(SupersetUnion(), UnionProto)
+        assert not isinstance(SupersetUnion(), UnionProto)
         assert not isinstance(MismatchUnion(), UnionProto)
 
     def test_return_anotation(self):

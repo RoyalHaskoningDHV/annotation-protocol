@@ -28,7 +28,7 @@ class _AnnotationProtocolMeta(type(Protocol)):
             check = check_annotations(
                 cls,
                 instance if isinstance(instance, type) else instance.__class__,
-                AnnotationProtocol,
+                _get_protocol_attrs(AnnotationProtocol),
             )
             if isinstance(check, bool):
                 return check
@@ -36,7 +36,10 @@ class _AnnotationProtocolMeta(type(Protocol)):
 
 
 class AnnotationProtocol(Protocol, metaclass=_AnnotationProtocolMeta):
+    """Protocol that checks attribute and function annotations."""
+
     def __init_subclass__(cls: Self) -> None:
+        """Override subclasshook to also do annotation checking."""
         cls._is_protocol = any(  # type: ignore[attr-defined]
             b is AnnotationProtocol for b in cls.__bases__
         )
@@ -47,10 +50,10 @@ class AnnotationProtocol(Protocol, metaclass=_AnnotationProtocolMeta):
         ignore_annotations_subclasshook = cls.__subclasshook__
 
         def _annotation_strict_subclasshook(other: object) -> bool:
-            # No need to check annotations if it doesn't pass the Protocol check already
+            """Check if complies to Protocol and do annotation check after."""
             ignore_annotations_check = ignore_annotations_subclasshook(other)
             if ignore_annotations_check is not True:
                 return ignore_annotations_check
-            return check_annotations(cls, other, AnnotationProtocol)
+            return check_annotations(cls, other, _get_protocol_attrs(AnnotationProtocol))
 
         cls.__subclasshook__ = _annotation_strict_subclasshook  # type: ignore[attr-defined]

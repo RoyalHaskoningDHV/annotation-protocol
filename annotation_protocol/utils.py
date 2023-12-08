@@ -1,14 +1,14 @@
 import logging
 from collections.abc import Generator
-from inspect import Signature, signature, Parameter
-from typing import Any, _get_protocol_attrs
+from inspect import Parameter, Signature, signature
+from typing import _get_protocol_attrs
 
 logger = logging.getLogger(__name__)
 
 
-def attrs_to_check(
+def attributes_to_check(
     protocol: object,
-    annotation_protocol: Any,  # noqa: ANN401
+    ignore_attributes: set[str],
 ) -> Generator[tuple[object, Signature], None, None]:
     """Generate attributes (and their signature) of protocol that need to be checked.
 
@@ -17,13 +17,14 @@ def attrs_to_check(
     Attributes
     ----------
         protocol (object): the protocol to get attributes from.
-        annotation_protocol (Any): the annotastion protocol class.
+        ignore_attributes (set[str]): the annotastion protocol class.
 
     Yields
     ------
         Generator[tuple[object, Signature], None, None]: _description_
     """
-    for attr in [a for a in _get_protocol_attrs(protocol) if not hasattr(annotation_protocol, a)]:
+    protocol_attributes: set[int] = _get_protocol_attrs(protocol)
+    for attr in protocol_attributes.difference(ignore_attributes):
         try:
             protocol_attr = getattr(protocol, attr, None)
             protocol_signature = signature(protocol_attr, eval_str=True)
@@ -36,11 +37,13 @@ def attrs_to_check(
 
 
 def mock_parameters(
-    protocol: Signature, other: Signature
+    protocol: Signature,
+    other: Signature,
 ) -> tuple[list[Parameter], dict[str, Parameter]]:
     """Make mock parameters from other to bind to protocol.
 
-    If proto has a VAR_POSITIONAL param (*args) consider any leftover POSITIONAL_OR_KEYWORD params to be VAR_POSITIONAL.
+    If proto has a VAR_POSITIONAL param (*args) consider any
+    leftover POSITIONAL_OR_KEYWORD params to be VAR_POSITIONAL.
 
     Attributes
     ----------
