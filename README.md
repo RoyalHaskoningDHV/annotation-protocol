@@ -42,11 +42,11 @@ class MyAnnotationProtocol(AnnotationProtocol):
 
 class ClassShouldPass:
     def testfun(my_arg: str) -> set:
-        return {}
+        return set()
 
 class ClassShouldFail:
     def testfun(my_arg: dict) -> set:
-        return {}
+        return set()
 
 print(f"Protocol: {isinstance(ClassShouldPass(), MyProtocol)}")  # returns True
 print(f"Protocol: {isinstance(ClassShouldFail(), MyProtocol)}")  # returns True
@@ -55,7 +55,7 @@ print(f"AnnotationProtocol: {isinstance(ClassShouldPass(), MyAnnotationProtocol)
 print(f"AnnotationProtocol: {isinstance(ClassShouldFail(), MyAnnotationProtocol)}")  # returns False
 ```
 
-Note that it is possible to have a subset of type annotations in the `Other` class compared to the `TestProtocol`.
+Note that it is possible to have a subset of type annotations in the `ClassShouldPass` class compared to the `MyAnnotationProtocol`. In other words it is not necessary to have all types of a `UnionType` group of types from the protocol in the class that should adhere to the protocol.
 
 ## Contributing
 
