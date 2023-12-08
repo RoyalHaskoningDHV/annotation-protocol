@@ -2,7 +2,7 @@
 
 The `AnnotationProtocol` allows for more thorough `isinstance` checks in python. Specifically, it adds the following functionality beyond `typing.Protocol`.
 
-1. Check that all attributes from `protocol` are present in the class `other`.
+1. Check that all attributes from the class `other` that should adhere to the `protocol` are present in it.
 2. Attributes, input arguments and return arguments need ot have the same type annotations between `protocol` and `other`.
 
 Author: [Royal HaskoningDHV](https://global.royalhaskoningdhv.com/)
@@ -17,26 +17,42 @@ Use the package manager [pip](https://pip.pypa.io/en/stable/) to install **annot
 pip install annotation-protocol
 ```
 
+## Background
+
+They `Protocol` class from the `typing` package can be used to create templates of classes with specific attributes and methods. We can check if a class adheres to a given _Protocol_ by doing an `isinstance` check of the form `isinstance(MyClass(), MyProtocol)`. The `AnnotationProtocol` extends this functionality by also checking if all type-hints are the same for each attribute, method argument and method output.
+
 ## Usage
 
-You can run `isinstance(other, protocol)` to check if the class `other` adheres to the _Protocol_ of type `AnnotationProtocol`. `protocol` can be a child of `AnnotationProtocol`.
+For clarity, in the examples below we compare the standard `Protocol` from the `typing` package against the `AnnotationProtocol`. Note that both return `False` when an attribute or method is missing, but only the `AnnotationProtocol` returns False when there is a mismatch in type-hints.
 
 ```python
+from typing import Protocol, runtime_checkable
+
 from annotation_protocol import AnnotationProtocol
 
-class TestProtocol(AnnotationProtocol):
-    attr: int
 
-    def testfun(a: int, b: str | list) -> set:
+@runtime_checkable
+class MyProtocol(Protocol):
+    def testfun(my_arg: str | list) -> set:
         ...
 
-class Other:
-    attr: int = 1
+class MyAnnotationProtocol(AnnotationProtocol):
+    def testfun(my_arg: str | list) -> set:
+        ...
 
-    def testfun(a: int, b: str) -> set:
+class ClassShouldPass:
+    def testfun(my_arg: str) -> set:
         return {}
 
-print(isinstance(Other, TestProtocol))
+class ClassShouldFail:
+    def testfun(my_arg: dict) -> set:
+        return {}
+
+print(f"Protocol: {isinstance(ClassShouldPass(), MyProtocol)}")  # returns True
+print(f"Protocol: {isinstance(ClassShouldFail(), MyProtocol)}")  # returns True
+
+print(f"AnnotationProtocol: {isinstance(ClassShouldPass(), MyAnnotationProtocol)}")  # returns True
+print(f"AnnotationProtocol: {isinstance(ClassShouldFail(), MyAnnotationProtocol)}")  # returns False
 ```
 
 Note that it is possible to have a subset of type annotations in the `Other` class compared to the `TestProtocol`.
