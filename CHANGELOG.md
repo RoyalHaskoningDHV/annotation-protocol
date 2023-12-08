@@ -1,5 +1,11 @@
 # Changelog
 
+## Version 1.3.0
+- Add docstrings and README.md
+- Make sure we allow a subset of annotations in the `other` class compared to `protocol`, but not
+  the other way around.
+- Refactor code into sub-functions and modules
+
 ## Version 1.2.0
 - Compare signatures as types not as strings of types in all cases (irrespective of python version)
 - Make logging slightly more verbose
