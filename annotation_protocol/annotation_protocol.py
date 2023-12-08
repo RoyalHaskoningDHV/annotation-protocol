@@ -5,15 +5,13 @@ from typing import (
     runtime_checkable,
 )
 
-from typing_extensions import Self
-
 from .check_annotations import check_annotations
 
 logger = logging.getLogger(__name__)
 
 
 class _AnnotationProtocolMeta(type(Protocol)):
-    def __instancecheck__(cls: Self, instance: object) -> bool:
+    def __instancecheck__(cls, instance: object) -> bool:
         if getattr(cls, "_is_protocol", False):
             for attr in _get_protocol_attrs(cls):
                 if (
@@ -38,7 +36,7 @@ class _AnnotationProtocolMeta(type(Protocol)):
 class AnnotationProtocol(Protocol, metaclass=_AnnotationProtocolMeta):
     """Protocol that checks attribute and function annotations."""
 
-    def __init_subclass__(cls: Self) -> None:
+    def __init_subclass__(cls) -> None:
         """Override subclasshook to also do annotation checking."""
         cls._is_protocol = any(  # type: ignore[attr-defined]
             b is AnnotationProtocol for b in cls.__bases__
