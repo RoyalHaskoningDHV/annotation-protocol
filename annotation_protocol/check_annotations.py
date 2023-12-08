@@ -1,40 +1,14 @@
 import logging
-from inspect import Parameter, Signature, _empty
-from types import UnionType
-from typing import (
-    Any,
-    Union,
-    get_args,
-    get_origin,
+from inspect import Signature
+
+from .utils import (
+    argument_annotations_equal,
+    attributes_to_check,
+    get_signature,
+    return_annotations_equal,
 )
 
-from .utils import attributes_to_check, get_signature, mock_parameters
-
 logger = logging.getLogger(__name__)
-
-UNION_TYPES = (Union, UnionType)
-
-
-def compare_annotations(protocol: object, other: object) -> bool:
-    """Compare 2 annotations and return if they are equal.
-
-    Attributes
-    ----------
-        protocol (object): _description_
-        other (object): _description_
-
-    Returns
-    -------
-        bool: _description_
-    """
-    if protocol in (_empty, Any, None) or other is Any:
-        return True
-
-    if get_origin(protocol) in UNION_TYPES:
-        protocol_types = set(get_args(protocol))
-        other_types = set(get_args(other)) if get_origin(other) in UNION_TYPES else {other}
-        return protocol_types >= other_types
-    return protocol == other
 
 
 def compare_signatures(
@@ -43,67 +17,23 @@ def compare_signatures(
 ) -> bool:
     """Compare 2 signatures and return if they are equal.
 
+    This includes return annotations,annotations of args and kwargs, and
+
     Attributes
     ----------
-        left (object): _description_
-        right (object): _description_
+        protocol (object): The `protocol` that `other` should adhere to
+        other (object): The class `other` that should adhere to the `protocol`
 
     Returns
     -------
-        bool: _description_
+        bool: True when signatures of class `other` are equal to `protocol`
     """
-    # Try to match return signatures.
-    if not compare_annotations(protocol.return_annotation, other.return_annotation):
-        msg = (
-            "Return annotation does not support the type given in protocol:",
-            f" {protocol.return_annotation} vs {other.return_annotation}",
-        )
-        logger.debug(msg)
+    if not return_annotations_equal(protocol, other):
         return False
 
-    # Try to match signatures using the mock parameters.
-    other_args, other_kwargs = mock_parameters(protocol, other)
-    try:
-        bound_params = protocol.bind(*other_args, **other_kwargs)
-    except TypeError as e:
-        msg = f"Signature of other does not match signature of protocol: {e}"
-        logger.debug(msg)
+    if not argument_annotations_equal(protocol, other):
         return False
 
-    # Check annotations of all non-args/kwargs parameters.
-    non_arg_kwarg_params = filter(
-        lambda p: p.kind not in (Parameter.VAR_POSITIONAL, Parameter.VAR_KEYWORD),
-        protocol.parameters.values(),
-    )
-    for protocol_param in non_arg_kwarg_params:
-        other_param = bound_params.arguments[protocol_param.name]
-        if (
-            protocol_param.kind is not Parameter.POSITIONAL_ONLY
-            and protocol_param.name != other_param.name
-        ):
-            msg = (
-                "Name of potential keyword argument is different:",
-                f" {protocol_param.name} != {other_param.name}",
-            )
-            logger.debug(msg)
-            return False
-
-        if (
-            protocol_param.kind is Parameter.POSITIONAL_OR_KEYWORD
-            and other_param.kind is Parameter.POSITIONAL_ONLY
-        ):
-            msg = f"Potential keyword argument {protocol_param.name} is positional-only"
-            logger.debug(msg)
-            return False
-
-        if not compare_annotations(protocol_param.annotation, other_param.annotation):
-            msg = (
-                f"Annotation for {protocol_param.name} does not ",
-                "support the type given in protocol: ",
-                f"{protocol_param.annotation} vs {other_param.annotation}",
-            )
-            logger.debug(msg)
-            return False
     return True
 
 
@@ -116,13 +46,13 @@ def check_annotations(
 
     Attributes
     ----------
-        protocol (object): _description_
-        other (object): _description_
-        ignore_attributes (set[str]): _description_
+        protocol (object): The `protocol` that `other` should adhere to
+        other (object): The class `other` that should adhere to the `protocol`
+        ignore_attributes (set[str]): Do not compare these attributes
 
     Returns
     -------
-        bool | type[NotImplemented]: _description_
+        bool | type[NotImplemented]: Outcome of the comparison
     """
     for attr, protocol_signature in attributes_to_check(protocol, ignore_attributes):
         if not (other_signature := get_signature(other, attr)):

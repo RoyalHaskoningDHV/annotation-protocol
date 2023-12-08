@@ -5,11 +5,9 @@ and assess the following in addition to whether the `object` is an instance of t
 `classinfo` argument.
 """
 from .annotation_protocol import AnnotationProtocol
-from .check_annotations import check_annotations, compare_annotations, compare_signatures
+from .check_annotations import check_annotations
 
 __all__ = [
     "AnnotationProtocol",
     "check_annotations",
-    "compare_annotations",
-    "compare_signatures",
 ]
