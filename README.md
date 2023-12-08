@@ -19,7 +19,7 @@ pip install annotation-protocol
 
 ## Background
 
-They `Protocol` class from the `typing` package can be used to create templates of classes with specific attributes and methods. We can check if a class adheres to a given _Protocol_ by doing an `isinstance` check of the form `isinstance(MyClass(), MyProtocol)`. The `AnnotationProtocol` extends this functionality by also checking if all type-hints are the same for each attribute, method argument and method output.
+The `Protocol` class from the `typing` package can be used to create templates of classes with specific attributes and methods. We can check if a class adheres to a given _Protocol_ by doing an `isinstance` check of the form `isinstance(MyClass(), MyProtocol)`. The `AnnotationProtocol` extends this functionality by also checking if all type-hints are the same for each attribute, method argument and method output.
 
 ## Usage
 
