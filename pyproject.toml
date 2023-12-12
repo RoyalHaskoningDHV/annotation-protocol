@@ -1,0 +1,71 @@
+[build-system]
+requires = ["setuptools"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "annotation_protocol"
+description = "Annotation protocol to allow very thorough isinstance checks."
+readme = "README.md"
+requires-python = ">=3.10,<=3.11"
+maintainers = [
+    { name = "Steffen Burgers", email = "steffen.burgers@rhdhv.com" },
+    { name = "Ruud Kassing", email = "ruud.kassing@rhdhv.com" },
+    { name = "Miguel Pereira Hernandez", email = "miguel.hernandez@rhdhv.com" },
+    { name = "Jesse de Ruijter", email = "jesse.de.ruijter@rhdhv.com" },
+    { name = "Pierpaolo Lucarelli", email = "pierpaolo.lucarelli@rhdhv.com" }
+]
+dependencies = []
+optional-dependencies.dev = ["pytest", "black", "pre-commit", "isort", "bandit==1.7.0", "flake8"]
+dynamic = ["version"]
+
+[tool.setuptools]
+packages.find.include = ["annotation_protocol*"]
+dynamic.version.attr = "annotation_protocol._version.__version__"
+
+[tool.black]
+line-length = 99
+
+
+[tool.ruff]
+line-length = 99
+target-version = "py310"
+select = ["ALL"]
+ignore = ["ANN101", "D100", "PERF203"]
+ignore-init-module-imports = true
+
+# Exclude a variety of commonly ignored directories.
+exclude = [
+    ".bzr",
+    ".direnv",
+    ".eggs",
+    ".git",
+    ".git-rewrite",
+    ".hg",
+    ".mypy_cache",
+    ".nox",
+    ".pants.d",
+    ".pytype",
+    ".ruff_cache",
+    ".svn",
+    ".tox",
+    ".venv",
+    "__pypackages__",
+    "_build",
+    "buck-out",
+    "build",
+    "dist",
+    "node_modules",
+    "venv",
+]
+
+[tool.ruff.mccabe]
+max-complexity = 10
+
+[tool.ruff.per-file-ignores]
+"tests/*" = ["ANN", "C", "D", "N", "PLR2004", "S101"]
+
+[tool.pytest.ini_options]
+filterwarnings = [
+    "ignore",
+    "default:::annotation_protocol.*",
+]
