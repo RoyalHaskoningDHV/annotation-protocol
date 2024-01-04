@@ -1,0 +1,49 @@
+trigger:
+  branches:
+    include:
+    - master
+    - build/*
+  paths:
+    include:
+    - annotation_protocol/_version.py
+
+pool:
+  vmImage: 'ubuntu-latest'
+
+jobs:
+- job: buildPackage
+  displayName: Build annotation-protocol package
+  strategy:
+    matrix:
+      Python310:
+        python.version: '3.10'
+
+  steps:
+  - task: UsePythonVersion@0
+    inputs:
+      versionSpec: '$(python.version)'
+      addToPath: true
+      architecture: 'x64'
+    displayName: Python version $(python.version)
+
+  # On non-master branches, we change the version to the dev one
+  - script: |
+      sed -i '/__version__/d' annotation_protocol/_version.py
+      sed -i 's/__dev_version__/__version__/g' annotation_protocol/_version.py
+    condition: and(succeeded(), ne(variables['Build.SourceBranch'], 'refs/heads/master'))
+    displayName: set dev build
+
+  # Install python distributions like wheel, twine etc
+  - script: python -m pip install --upgrade pip wheel setuptools twine build
+    displayName: 'Install tools'
+
+  # Build the python distribution from source
+  - script: python -m build
+    displayName: 'Build package'
+
+  - task: TwineAuthenticate@1
+    inputs:
+      artifactFeed: 'SAM/SAM'
+
+  - script: twine upload -r SAM --config-file $(PYPIRC_PATH) dist/*.whl
+    displayName: 'Upload package'
