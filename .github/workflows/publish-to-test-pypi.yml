@@ -18,8 +18,8 @@ jobs:
 
     - name: Set dev release version if not in master
       run: |
-        sed -i "/__version__/d" ../../annotation_protocol/_version.py
-        sed -i "s/__dev_version__/__version__/g" ../../annotation_protocol/_version.py
+        sed -i "/__version__/d" ./annotation_protocol/_version.py
+        sed -i "s/__dev_version__/__version__/g" ./annotation_protocol/_version.py
       if: github.ref != 'refs/heads/master'
 
     - name: Install pypa/build
