@@ -19,8 +19,8 @@ jobs:
     # Use dev version when not in master
     - name: Deploy to production
       run: >-
-        sed -i '/__version__/d' darrow_poc/_version.py
-        sed -i 's/__dev_version__/__version__/g' darrow_poc/_version.py
+        sed -i '/__version__/d' annotation_protocol/_version.py
+        sed -i 's/__dev_version__/__version__/g' annotation_protocol/_version.py
       if: github.ref != 'refs/heads/master'
 
     - name: Install pypa/build
