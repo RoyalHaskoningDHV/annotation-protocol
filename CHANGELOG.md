@@ -1,5 +1,9 @@
 # Changelog
 
+## Version 1.3.1
+- Add release pipelines for `pypi` and `testpypi`.
+- Remove old publishing pipeline to `SAM` artifacts.
+
 ## Version 1.3.0
 - Add docstrings and README.md
 - Make sure we allow a subset of annotations in the `other` class compared to `protocol`, but not
