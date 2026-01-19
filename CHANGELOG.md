@@ -1,5 +1,8 @@
 # Changelog
 
+## Version1.4.0
+- Extend support to Python 3.11 and 3.12, but still keeping compatibility with 3.10.
+
 ## Version 1.3.1
 - Add release pipelines for `pypi` and `testpypi`.
 - Remove old publishing pipeline to `SAM` artifacts.
